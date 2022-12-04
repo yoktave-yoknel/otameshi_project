@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FizzBuzz</title>
+</head>
+
+<body>
+    <header>
+        <h1>FizzBuzzのプログラム</h1>
+    </header>
+    <section>
+        <label for="fizzbuzzEnd" style="display:block">終端を指定してください。(1-150)</label>
+        <input type="number" name="fizzbuzzEnd" id="fizzbuzzEnd" min="1" max="150">
+        <button type="button" onclick="onClickEvent()">出力実行</button>
+    </section>
+    <section>
+        <p>FizzBuzzの結果</p>
+        <p id="fizzbuzzResult" style="background-color: bisque; width: fit-content;">(ここに結果が表示されます。)</p>
+    </section>
+
+    <script>
+        function onClickEvent() {
+            let fizzbussEnd = document.getElementById('fizzbuzzEnd').value;
+            if (fizzbussEnd <= 0 || fizzbussEnd > 150) {
+                alert('1-150の値を入力してください');
+                return;
+            }
+            document.getElementById('fizzbuzzResult').innerHTML = fizzbuzz(fizzbussEnd);
+        }
+
+        function fizzbuzz(end) {
+            let text = '';
+            for (let i = 1; i <= end; i++) {
+                let stateFlag = 0;
+                if (i % 3 == 0) {
+                    text += 'Fizz';
+                    stateFlag++;
+                }
+                if (i % 5 == 0) {
+                    text += 'Buzz';
+                    stateFlag++;
+                }
+                if (stateFlag == 0) {
+                    // 3の倍数でも5の倍数でもないので数字をそのまま入れる。
+                    text += i;
+                }
+                if (i != end) {
+                    // 続きがある場合はカンマを入れる。
+                    text += ',';
+                }
+                if (stateFlag == 2) {
+                    // 見やすくするため15で改行する。
+                    text += '<br>';
+                }
+            }
+            return text;
+        }
+    </script>
+</body>
+
+</html>

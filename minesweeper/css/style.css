@@ -1,0 +1,29 @@
+td {
+    padding: 0px;
+    width: 40px;
+    height: 40px !important;
+    text-align: center;
+    border: 1px solid rgb(60, 60, 60);
+}
+
+/**　未開封のクラス　*/
+.closed {
+    background-color: lightgray;
+    color: black;
+    cursor: pointer;
+
+}
+
+/**　開封して爆弾だったときのクラス　*/
+.bombed {
+    background: red;
+    color: white;
+    cursor: auto;
+}
+
+/**　開封して爆弾ではなかったときのクラス　*/
+.opened {
+    background: white;
+    color: black;
+    cursor: auto;
+}

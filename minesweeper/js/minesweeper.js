@@ -141,7 +141,7 @@ class MSCell extends HTMLTableCellElement {
         }
 
         // 周囲の旗の数を取得
-        const flgCount = this.arounds.filter(around => around.textContent === '旗').length;
+        let flgCount = this.arounds.filter(around => around.textContent === '旗').length;
 
         // 周囲の旗の数と、クリックしたセルに表示されている爆弾数が一致していれば
         // 周囲のセルをすべて開く

@@ -160,19 +160,19 @@ customElements.define('ms-td', MSCell, { extends: 'td' });
 //===================================
 // 全セルを格納しておく変数
 //===================================
-let msCells = [];
+const msCells = [];
 
 //===================================
 // ゲーム初期化用関数
 //===================================
-let initGame = function (xSize, ySize) {
+const initGame = function (xSize, ySize) {
 
     // ボタン配置
     for (let y = 0; y < ySize; y++) {
-        let tr = document.createElement('tr');
+        const tr = document.createElement('tr');
         for (let x = 0; x < xSize; x++) {
             // セルを作る
-            let msCell = document.createElement('td', { is: 'ms-td' });
+            const msCell = document.createElement('td', { is: 'ms-td' });
             // セルの初期化
             msCell.init(x, y, Math.random() * 100 < 10);
             // セルをtrにいれておく
@@ -187,14 +187,14 @@ let initGame = function (xSize, ySize) {
     msCells.forEach(msCell => {
 
         // 周囲8マスを取得
-        let arounds = msCells.filter(otherCell => {
+        const arounds = msCells.filter(otherCell => {
 
             if (msCell === otherCell) {
                 return false;
             }
 
-            let xArea = [msCell.x - 1, msCell.x, msCell.x + 1];
-            let yArea = [msCell.y - 1, msCell.y, msCell.y + 1];
+            const xArea = [msCell.x - 1, msCell.x, msCell.x + 1];
+            const yArea = [msCell.y - 1, msCell.y, msCell.y + 1];
 
             if (xArea.indexOf(otherCell.x) >= 0) {
                 if (yArea.indexOf(otherCell.y) >= 0) {
@@ -213,9 +213,9 @@ let initGame = function (xSize, ySize) {
 //===================================
 // リセットボタンクリック
 //===================================
-let onClickResetButton = function () {
+const onClickResetButton = function () {
     // 現在の盤を消去
-    let targetElement = document.getElementById('target');
+    const targetElement = document.getElementById('target');
     while(targetElement.firstChild) {
         targetElement.removeChild(targetElement.firstChild);
     }

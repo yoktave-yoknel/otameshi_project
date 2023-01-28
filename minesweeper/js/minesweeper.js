@@ -103,6 +103,7 @@ class MSCell extends HTMLTableCellElement {
                 this.arounds.forEach(around => around.clickFunc());
             }
         }
+        checkComplete();
     }
 
     //-----------------------------------
@@ -128,7 +129,7 @@ class MSCell extends HTMLTableCellElement {
             // 元に戻す
             this.textContent = '';
         }
-
+        checkComplete();
     }
 
     //-----------------------------------
@@ -150,6 +151,23 @@ class MSCell extends HTMLTableCellElement {
         }
     }
 
+    //-----------------------------------
+    // クリア判定用のチェック関数、
+    //-----------------------------------
+    isIncomplete() {
+        // 終了条件は「すべての爆弾セルに旗が立っている」かつ「すべての非爆弾セルが開かれている」
+        // 上記の条件を満たさないセルであるかを判定
+        if (this.bombFlg) {
+            if (this.textContent !== '旗') {
+                return true;
+            }
+        } else {
+            if (!this.openedFlg) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
 
 //===================================
@@ -223,6 +241,20 @@ const onClickResetButton = function () {
     msCells.splice(0, msCells.length);
     // 盤を再作成
     initGame(15, 15);
+}
+
+//===================================
+// 終了判定
+//===================================
+const checkComplete = function () {
+    // 終了条件は「すべての爆弾セルに旗が立っている」かつ「すべての非爆弾セルが開かれている」
+    // 上記の条件を満たさないセルの数をカウント
+    if(msCells.some(msCell => msCell.isIncomplete())) {
+        // ゲーム続行
+    } else {
+        // ゲーム終了
+        alert('CLEAR!!');
+    }
 }
 
 //===================================

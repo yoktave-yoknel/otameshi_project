@@ -283,7 +283,7 @@ const checkComplete = function () {
     // 終了条件は「すべての爆弾セルに旗が立っている」かつ「すべての非爆弾セルが開かれている」
     // 上記の条件を満たさないセルの数をカウント
     if (msCells.some(msCell => msCell.isIncomplete())) {
-        // ゲーム続行        
+        // ゲーム続行
     } else {
         // ゲーム終了
         clearTimeout(timeoutID);

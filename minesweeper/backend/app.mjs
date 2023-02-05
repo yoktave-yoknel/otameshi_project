@@ -13,7 +13,7 @@ const server = http.createServer(function(req, res){
     let dispMessage = "No Message!";
 
     // 文字化けを防ぐため、content-typeを設定
-    // res.writeHead(200,{'content-type': 'text/html; charset=UTF-8'});
+    res.writeHead(200,{'content-type': 'text/html; charset=UTF-8'});
     if(req.url === "/hello"){
         // http://localhost:8080/helloのとき画面に表示
         dispMessage = "Hello!";

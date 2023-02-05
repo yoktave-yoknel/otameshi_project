@@ -10,16 +10,16 @@ import * as http from "http";
  */
 const server = http.createServer(function(req, res){
 
-    let dispMessage = "No Message!";
+    let dispMessage = "メッセージありまへん！！！";
 
     // 文字化けを防ぐため、content-typeを設定
     res.writeHead(200,{'content-type': 'text/html; charset=UTF-8'});
     if(req.url === "/hello"){
         // http://localhost:8080/helloのとき画面に表示
-        dispMessage = "Hello!";
+        dispMessage = "こんにち、はぁ！";
     } else if (req.url === "/bye"){
         // http://localhost:8080/byeのとき画面に表示
-        dispMessage = "Bye!";
+        dispMessage = "さいなら";
     }
     console.log(dispMessage);
     // responseを返す際はresのメソッドを使用する
@@ -33,7 +33,7 @@ const server = http.createServer(function(req, res){
       <title>Document</title>
     </head>
     <body>
-      <h1>テストテスト</h1>
+      <h1>${dispMessage}</h1>
     </body>
     </html>`);
 });

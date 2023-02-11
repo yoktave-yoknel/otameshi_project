@@ -267,6 +267,7 @@ const initGame = function (xSize, ySize) {
 const onClickResetButton = function () {
     // 現在の盤を消去
     const targetElement = document.getElementById('target');
+    axios.get("http://localhost:8080",{});
     while (targetElement.firstChild) {
         targetElement.removeChild(targetElement.firstChild);
     }

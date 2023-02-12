@@ -1,6 +1,8 @@
 {
   "recommendations": [
     "dbaeumer.vscode-eslint",
-    "eamodio.gitlens"
+    "eamodio.gitlens",
+    "shd101wyy.markdown-preview-enhanced",
+    "yzhang.markdown-all-in-one"
   ]
 }

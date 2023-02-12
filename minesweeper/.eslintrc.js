@@ -15,6 +15,6 @@ module.exports = {
         // 変数名にはキャメルケースを使用する
         // ただし、定数にスネークケース、オブジェクトのプロパティに_は使用可能。
         camelcase: ["error", { properties: "never" }],
-        semi: ["error", "always"],
+        semi: ["error", "always"], // 文末のセミコロン抜けを禁止
     },
 };

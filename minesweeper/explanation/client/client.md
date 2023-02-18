@@ -10,11 +10,17 @@
   - [!important](#important)
   - [cursor](#cursor)
 - [JS](#js)
-- [JSライブラリ](#jsライブラリ)
+  - [class](#class)
+    - [コンストラクター関数](#コンストラクター関数)
+    - [class構文](#class構文)
+  - [Promise](#promise)
+    - [コールバック地獄](#コールバック地獄)
+- [JS Library](#js-library)
   - [axios](#axios)
-- [tool](#tool)
+- [Tool](#tool)
   - [nodemon](#nodemon)
   - [eslint](#eslint)
+- [ChatGPTでコードレビュー結果](#chatgptでコードレビュー結果)
 - [参考](#参考)
 
 ## HTML
@@ -107,8 +113,155 @@ ex) ポインターに変更
 ```
 ## JS
 
+### class
 
-## JSライブラリ
+`オブジェクト`のひな形を作成する物。
+Javaのclassとは概念が少し異なる。
+
+- 同じプロパティを持つけど、値が異なるオブジェクトを作成したい！、そんなときに役に立つ
+- 従来で使用可能だったコンストラクター関数をより使いやすくしたもの
+  - 裏側ではコンストラクター関数と同様の処理が行われている。
+- ES6以降で使用できkる
+- ホイスティング(巻き上げ)が発生しない = new するより前の行にclassを定義する必要がある
+
+#### コンストラクター関数
+
+- 特別な関数
+  - アロー関数は使用できない
+- newで呼び出し可能
+  1. Personの作成
+  2. 空のオブジェクトがつくられる
+  3. thisキーワードが空のオブジェクトにセットされる
+  4. 空のオブジェクトがprototypeにリンクされる
+  5. 関数から自動的に空のオブジェクトをreturnされる
+  6. 空のオブジェクトが変数に格納される
+-
+
+
+
+通常のクラス作成
+```js
+//コンストラクタ関数を作成
+const Person = function(firstName, birthYear) {
+    console.log(this);//Person {}
+    this.firstName = firstName;
+    this.birthYear = birthYear;
+}
+
+//インスタンスを作成
+const yamada = new Person('Yamada', 1988);
+console.log(yamada);//Person {firstName: "Yamada", birthYear: 1988}
+```
+
+継承
+- classに対してextendsキーワードを使用する
+
+```js
+//親クラス
+class PersonConstructor {
+  constructor(lastName, birthYear) {
+    this.lastName = lastName;
+    this.birthYear = birthYear;
+  }
+}
+
+//子クラス
+class Student extends PersonConstructor {
+  constructor(lastName, birthYear, course) {
+    // PersonConstructorのコンストラクターに値を設定している
+    super(lastName, birthYear);
+    this.course = course;
+  }
+  introduce() {
+    console.log(`私は${this.lastName}です。${this.course}を勉強しています。`);
+  }
+}
+
+const kobayashi = new Student('小林', 2030, '数学');
+// Student {lastName: "小林", birthYear: 2030, course: "数学"}
+console.log(kobayashi);
+
+// 私は小林です。数学を勉強しています。
+kobayashi.introduce();
+
+```
+
+
+#### class構文
+
+通常のクラス作成
+```js
+//コンストラクタ関数を作成
+class Person {
+    constructor(firstName, birthYear){
+        this.firstName = firstName;
+        this.birthYear = birthYear;
+    }
+}
+
+//インスタンスを作成
+const yamada = new Person('Yamada', 1988);
+console.log(yamada);//Person {firstName: "Yamada", birthYear: 1988}
+```
+
+
+継承
+```js
+//親クラス
+  class PersonConstructor {
+    constructor(firstName, birthYear){
+        this.firstName = firstName;
+        this.birthYear = birthYear;
+    }
+
+  };
+
+  //子クラス
+  class Student extends PersonConstructor{
+    constructor(firstName, birthYear, course){
+        // PersonConstructorのコンストラクターに値を設定している
+        super(firstName, birthYear);
+        this.course = course;
+    }
+    introduce() {
+        console.log(`私は${this.lastName}です。${this.course}を勉強しています。`);
+    };
+  };
+
+  const kobayashi = new Student('小林', 2030, '数学');
+  console.log(kobayashi); //Student {lastName: "小林", birthYear: 2030, course: "数学"}
+
+```
+
+
+### Promise
+
+
+#### コールバック地獄
+
+非同期処理を順次実行したい場合は、
+ex) 1秒毎(非同期処理)に処理を順番に実行したい場合
+
+```js
+function a(callbackFn, val) {
+  // 非同期処理
+  setTimeout(function () {
+    console.log(`setTimeOut ${val++}だよｰ`);
+    callbackFn(val);
+  }, 1000);
+}
+// 3秒後に実行
+a(function (val) {
+  // 2秒後に実行
+  a(function (val) {
+    // 1秒後に実行
+    a(function (val) {}, val);
+  }, val);
+}, 0);
+```
+
+
+## JS Library
 
 ### axios
 
@@ -130,14 +283,56 @@ Promiseベースでやり取りできる。
     </head>
     ```
 2. jsに記載
+    ```js
+    // GETメソッドでデータを取得
+    axios.get("http://localhost:8080", {})
+    .then((res) => {
+        // 成功時の処理
+    }).catch((err) => {
+        // エラー時の処理
+    }).finally(() => {
+        // 成功/エラー関係なく、実行される処理
+    });
+    ```
 
-
-## tool
+## Tool
 
 ### nodemon
 
 ### eslint
 
+
+## ChatGPTでコードレビュー結果
+
+ちなみに、最近流行りのChatGPTのAIにコードレビューしてもらいました。
+
+```text
+以下が、コードレビューの結果になります。
+
+コード全体的には、可読性が高く、コメントも付けられており、
+分かりやすい実装になっていると思います。
+
+init() メソッドでセルの初期設定を行っていますが、
+その中でクラスのスタイルを変更するコードがあります。
+init() メソッドはあくまでセルの初期設定を行うメソッドであるべきなので、
+スタイルの変更は show() メソッドに移した方が良いと思います。
+
+setArounds() メソッドで、this.aroundBombCount を計算していますが、
+aroundBombCount の値は変更されることがないため、
+コンストラクタで初期化するのが良いと思います。
+
+show() メソッドでは、爆弾のセルかどうかで表示する内容を変えていますが、
+init() メソッドで bombFlg の値が確定しているため、
+初期表示時に処理できるようにするとより簡潔なコードになると思います。
+
+clickFunc() メソッド内で、msCells.forEach() を使用しているため、
+その msCells 変数をどこかで定義している必要がありますが、
+どこにも定義がないため、コードがエラーになる可能性があります。
+このような変数をグローバルスコープで定義することは避けるべきです。
+代わりに、クラスのインスタンス変数として定義することをおすすめします。
+
+上記の点を改善すると、より良いコードになると思います。
+```
 
 ## 参考
 
@@ -153,8 +348,12 @@ Promiseベースでやり取りできる。
   - https://developer.mozilla.org/ja/docs/Web/CSS/Containing_block
   - https://developer.mozilla.org/ja/docs/Web/CSS/cursor
 - JS
+  - https://devsakaso.com/javascript-constructor-function/
   - https://developer.mozilla.org/ja/docs/Web/API/HTMLTableCellElement
+  - https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Classes
 - JSライブラリ
   - https://reffect.co.jp/vue/vue-axios-learn
   - https://qiita.com/alt_yamamoto/items/0d72276c80589493ceb4
   - https://qiita.com/busyoumono99/items/9b5ffd35dd521bafce47
+- ChatGPT
+  - https://openai.com/blog/chatgpt/

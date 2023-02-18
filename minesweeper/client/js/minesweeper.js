@@ -33,7 +33,7 @@ class MSCell extends HTMLTableCellElement {
         // 爆弾フラグ（爆弾のときtrue/爆弾でなければfalse）
         this.bombFlg = bombFlg;
         // 見た目のクラス
-        this.classList.add('closed')
+        this.classList.add('closed');
 
     }
 
@@ -267,7 +267,14 @@ const initGame = function (xSize, ySize) {
 const onClickResetButton = function () {
     // 現在の盤を消去
     const targetElement = document.getElementById('target');
-    axios.get("http://localhost:8080",{});
+    axios.get("http://localhost:8080", {})
+        .then((res) => {
+            // 成功時の処理
+        }).catch((err) => {
+            // エラー時の処理
+        }).finally(() => {
+            // 成功/エラー関係なく、実行される処理
+        });
     while (targetElement.firstChild) {
         targetElement.removeChild(targetElement.firstChild);
     }

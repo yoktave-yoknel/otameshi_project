@@ -259,7 +259,7 @@ const initGame = function (xSize, ySize) {
     });
 
     gameStage = GAME_NOT_STARTED;
-}
+};
 
 //===================================
 // リセットボタンクリック
@@ -282,7 +282,7 @@ const onClickResetButton = function () {
     msCells.splice(0, msCells.length);
     // 盤を再作成
     initGame(15, 15);
-}
+};
 
 //===================================
 // 終了判定
@@ -298,7 +298,7 @@ const checkComplete = function () {
         gameStage = GAME_FINISHED;
         alert('CLEAR!! YOUR SCORE: ' + Math.trunc(timerCount / 60) + 'm' + (timerCount % 60) + 's');
     }
-}
+};
 
 const countTimer = function () {
     // 99分59秒を超えたらカウントアップしない
@@ -312,7 +312,7 @@ const countTimer = function () {
     timerElement.textContent = `${min}:${sec}`;
     // 1秒ごとにタイマ更新
     timeoutID = setTimeout(countTimer, 1000);
-}
+};
 
 //===================================
 // ゲーム初期化

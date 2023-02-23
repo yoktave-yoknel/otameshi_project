@@ -267,14 +267,7 @@ const initGame = function (xSize, ySize) {
 const onClickResetButton = function () {
     // 現在の盤を消去
     const targetElement = document.getElementById('target');
-    axios.get("http://localhost:8080", {})
-        .then((res) => {
-            // 成功時の処理
-        }).catch((err) => {
-            // エラー時の処理
-        }).finally(() => {
-            // 成功/エラー関係なく、実行される処理
-        });
+
     while (targetElement.firstChild) {
         targetElement.removeChild(targetElement.firstChild);
     }
@@ -296,7 +289,21 @@ const checkComplete = function () {
         // ゲーム終了
         clearTimeout(timeoutID);
         gameStage = GAME_FINISHED;
-        alert('CLEAR!! YOUR SCORE: ' + Math.trunc(timerCount / 60) + 'm' + (timerCount % 60) + 's');
+
+        // サーバとの通信
+        let result;
+        let param = new URLSearchParams();
+        param.append("cleartime", timerCount);
+        axios.post("http://localhost:8080", param)
+            .then((res) => {
+                // 成功時の処理
+                result = res.data;
+                alert(result + ' YOUR SCORE: ' + Math.trunc(timerCount / 60) + 'm' + (timerCount % 60) + 's');
+            }).catch((err) => {
+                // エラー時の処理
+            }).finally(() => {
+                // 成功/エラー関係なく、実行される処理
+            });
     }
 };
 

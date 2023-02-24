@@ -14,7 +14,10 @@
     - [コンストラクター関数](#コンストラクター関数)
     - [class構文](#class構文)
   - [Promise](#promise)
-    - [コールバック地獄](#コールバック地獄)
+    - [JSにおける非同期処理](#jsにおける非同期処理)
+    - [【Promiseなし】【問題点1】コールバック地獄](#promiseなし問題点1コールバック地獄)
+    - [【Promiseなし】【問題点2】エラー処理がうまくいかない](#promiseなし問題点2エラー処理がうまくいかない)
+    - [](#)
 - [JS Library](#js-library)
   - [axios](#axios)
 - [Tool](#tool)
@@ -236,10 +239,24 @@ console.log(yamada);//Person {firstName: "Yamada", birthYear: 1988}
 
 ### Promise
 
+非同期処理をより簡単に処理できるようにしたもの
+- ES6から追加
+- 追加されるまでは非同期処理の扱いが煩雑になりがちで、エラー処理なども大変だった
+- 最近のWEB APIではPromise対応となっていることが多い
 
-#### コールバック地獄
 
-非同期処理を順次実行したい場合は、
+#### JSにおける非同期処理
+
+JSエンジンの`C++側で実行される処理`全般が該当する
+それに酔って処理が煩雑になってしまい、扱いが難しくなってしまった
+
+
+
+#### 【Promiseなし】【問題点1】コールバック地獄
+
+非同期処理を順次実行したい場合は、段々中に記述して行く必要があり、コードが読みづらくなる。
+クリーンコードの観点からもよろしくない。
+
 ex) 1秒毎(非同期処理)に処理を順番に実行したい場合
 
 ```js
@@ -250,27 +267,71 @@ function a(callbackFn, val) {
     callbackFn(val);
   }, 1000);
 }
-// 3秒後に実行
+// 下のa関数の後に実行したい
 a(function (val) {
-  // 2秒後に実行
+  // 下のa関数の後に実行したい
   a(function (val) {
-    // 1秒後に実行
-    a(function (val) {}, val);
+    // 下のa関数の後に実行したい
+    a(function (val) {
+      // ・・・etc
+    }, val);
   }, val);
 }, 0);
 ```
+#### 【Promiseなし】【問題点2】エラー処理がうまくいかない
+
+`try~catch`文でもエラーをキャッチできない場合がある。
+- `try~catch`文は**tryの中で発生したErrorしかcatchできない**
+
+
+
+```jS
+/** test.js */
+
+// tryを抜けた後にsetTimeoutが実行される
+try {
+  setTimeout(() => {
+    throw new Error("error");
+  }, 1000);
+} catch (error) {
+  // エラーが出力されない
+  console.log(error.message);
+}
+
+// Wi-Fiを切ったらC++側でエラーが発生するが、ブラウザではエラーが表示されない
+try {
+  navigator.geolocation.getCurrentPosition((p) => {
+    console.log(p);
+  });
+} catch (error) {
+  console.log(error.message);
+}
+
+```
+
+
+```log
+<!-- log -->
+Uncaught Error: error at test.js:3:11
+```
+
+####
+
+
 
 
 ## JS Library
 
 ### axios
 
-ブラウザーが内包している通信系のWeb APIをより使いやすくしてくれるJSベースのHTTPクライアントライブラリ。
+ブラウザーが内包している通信系のWeb API`XMLHttpRequest`をより使いやすくしてくれるJSベースのHTTPクライアントライブラリ。
 Promiseベースでやり取りできる。
 - ブラウザに内包されているAPIはW3Cが標準化しており、interfaceとして定義されている
   - interface = 引数(input)とreturn値(output)だけが決まっている
   - つまり、結果は同じだが、処理の過程はブラウザ毎に異なる
   - ex) DOM操作 = Web APIの中にDOM APIがあり、それを使用する事
+- `Fetch`APIも存在するが、直感的ではなく、400/500番台がエラーとして扱われない等、扱いづらい部分も多い。
+そのため、現時点(2023/02/24)ではaxiosを使用しているほうが見やすいコードとなる。
 
 
 1. Axiosを使用できるように設定。
@@ -352,8 +413,19 @@ clickFunc() メソッド内で、msCells.forEach() を使用しているため�
   - https://developer.mozilla.org/ja/docs/Web/API/HTMLTableCellElement
   - https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Classes
 - JSライブラリ
-  - https://reffect.co.jp/vue/vue-axios-learn
-  - https://qiita.com/alt_yamamoto/items/0d72276c80589493ceb4
-  - https://qiita.com/busyoumono99/items/9b5ffd35dd521bafce47
+  - axios
+    - https://reffect.co.jp/vue/vue-axios-learn
+    - https://axios-http.com/ja/docs/intro
+    - https://memo.ag2works.tokyo/post-4424/#:~:text=Fetch%E3%81%A8XMLHttpRequest%E3%81%AE%E9%81%95%E3%81%84,%E3%81%8C%E6%8E%A8%E5%A5%A8%E3%81%95%E3%82%8C%E3%81%A6%E3%81%84%E3%82%8B%E3%80%82
+    - https://launchcart.jp/blog/xmlhttprequestajax%E3%81%A8fetch-api%E3%81%AE%E4%BD%BF%E3%81%84%E6%96%B9%E3%82%92%E6%AF%94%E8%BC%83%E3%81%97%E3%81%A6%E3%81%BF%E3%82%8B/
+    - https://ja.javascript.info/xmlhttprequest
+    - https://zenn.dev/syu/articles/9840082d1a6633
+    - https://developer.mozilla.org/ja/docs/Web/API/XMLHttpRequest
+    - https://shimablogs.com/fetch-api-axios-difference
+    - https://qiita.com/alt_yamamoto/items/0d72276c80589493ceb4
+    - https://qiita.com/busyoumono99/items/9b5ffd35dd521bafce47
 - ChatGPT
   - https://openai.com/blog/chatgpt/
+- Udemy講座
+  - https://www.udemy.com/share/103dh4/
+  - https://www.udemy.com/share/106u54/

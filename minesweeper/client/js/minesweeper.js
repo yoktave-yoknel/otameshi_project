@@ -211,6 +211,7 @@ let gameStage = GAME_NOT_STARTED;
 //===================================
 let timerCount = -1;
 let timeoutID = 0;
+let timerElement;
 
 //===================================
 // ゲーム初期化用関数
@@ -258,7 +259,12 @@ const initGame = function (xSize, ySize) {
         msCell.setArounds(arounds);
     });
 
+    // タイマなどをリセット
     gameStage = GAME_NOT_STARTED;
+    clearTimeout(timeoutID);
+    timerCount = -1;
+    timerElement = document.getElementById('timer');
+    timerElement.textContent = `00:00`;
 };
 
 //===================================
@@ -294,11 +300,11 @@ const checkComplete = function () {
         let result;
         let param = new URLSearchParams();
         param.append("cleartime", timerCount);
-        axios.post("http://localhost:8080", param)
+        axios.post("/minesweeper", param)
             .then((res) => {
                 // 成功時の処理
                 result = res.data;
-                alert(result + ' YOUR SCORE: ' + Math.trunc(timerCount / 60) + 'm' + (timerCount % 60) + 's');
+                alert(result + '\nYOUR SCORE: ' + Math.trunc(timerCount / 60) + 'm' + (timerCount % 60) + 's');
             }).catch((err) => {
                 // エラー時の処理
             }).finally(() => {

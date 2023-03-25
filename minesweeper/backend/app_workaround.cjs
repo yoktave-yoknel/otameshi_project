@@ -1,10 +1,11 @@
 const express = require('express');
 const app = express();
-app.use(express.urlencoded({extended:true}));
+app.use(express.urlencoded({ extended: true }));
 
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 const { DynamoDBDocumentClient, PutCommand } = require('@aws-sdk/lib-dynamodb');
-const REGION = "ap-northeast-1"; // EC2およびDynamoDBのリージョンを指定
+require(dotenv).config({ path: '../.env' });
+const REGION = process.env.REGION;
 
 const marshallOptions = {
     // Whether to automatically convert empty strings, blobs, and sets to `null`.
@@ -27,8 +28,8 @@ app.post('/minesweeper', (req, res) => {
     //res.setHeader('Access-Control-Allow-Origin', '*');
 
     // DBへのレコード追加
-    var nowDate = new Date();
-    var params = {
+    const nowDate = new Date();
+    const params = {
         TableName: 'scores',
         Item: {
             'date': nowDate.toLocaleString('ja-JP'),
@@ -49,7 +50,7 @@ app.post('/minesweeper', (req, res) => {
     // TODO: DBからランキング取得
 
     console.log(req.body.cleartime);
-    if(req.body.cleartime <= 60){
+    if (req.body.cleartime <= 60) {
         res.send('MARVELOUS!!!');
     } else {
         res.send('GOOD JOB.');

@@ -3,8 +3,8 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
-const { DynamoDBDocumentClient, PutCommand } = require('@aws-sdk/lib-dynamodb');
-require(dotenv).config({ path: '../.env' });
+const { DynamoDBDocumentClient, PutCommand, QueryCommand } = require('@aws-sdk/lib-dynamodb');
+require('dotenv').config({ path: '.env' });
 const REGION = process.env.REGION;
 
 const marshallOptions = {
@@ -29,25 +29,56 @@ app.post('/minesweeper', (req, res) => {
 
     // DBへのレコード追加
     const nowDate = new Date();
-    const params = {
-        TableName: 'scores',
+    const putParams = {
+        TableName: 'scores_all',
         Item: {
-            'date': nowDate.toLocaleString('ja-JP'),
-            'cleartime': parseInt(req.body.cleartime, 10),
+            'User': 'DUMMY',  // TODO: クライアント側で入力可能になるまで固定値設定
+            'Date': nowDate.toLocaleString('ja-JP'),
+            'ClearTime': parseInt(req.body.cleartime, 10),
+            'GameKind': 'minesweeper',
         }
     };
-    const run = async () => {
+    const runPut = async () => {
         try {
-            const data = await ddbDocClient.send(new PutCommand(params));
+            const data = await ddbDocClient.send(new PutCommand(putParams));
             console.log("Success - item added or updated", data);
         } catch (err) {
             console.log("Error", err);
         }
         return;
     };
-    run();
+    runPut();
 
-    // TODO: DBからランキング取得
+    // DBから上位スコアを取得
+    const queryParams = {
+        TableName: 'scores_all',
+        IndexName: 'GameKind-ClearTime-index',
+        KeyConditionExpression: '#gamekind = :gamekind',
+        ExpressionAttributeNames: {
+            "#gamekind": "GameKind",
+        },
+        ExpressionAttributeValues: {
+            ":gamekind": 'minesweeper',
+        },
+        Limit: 3
+    };
+    const runQuery = async () => {
+        try {
+            const data = await ddbDocClient.send(new QueryCommand(queryParams));
+            var rank = 1;
+            data.Items.forEach(function (element) {
+                console.log('score: ', rank);
+                console.log(element.User);
+                console.log(element.ClearTime);
+                console.log(element.Date);
+                rank++;
+            });
+        } catch (err) {
+            console.log("Error", err);
+        }
+        return;
+    };
+    runQuery();
 
     console.log(req.body.cleartime);
     if (req.body.cleartime <= 60) {

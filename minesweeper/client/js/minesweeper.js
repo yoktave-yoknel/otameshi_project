@@ -304,7 +304,7 @@ const checkComplete = function () {
             .then((res) => {
                 // 成功時の処理
                 result = res.data;
-                alert(result + '\nYOUR SCORE: ' + Math.trunc(timerCount / 60) + 'm' + (timerCount % 60) + 's');
+                openClearTimeModal(result, timerCount);
             }).catch((err) => {
                 // エラー時の処理
             }).finally(() => {
@@ -331,3 +331,38 @@ const countTimer = function () {
 // ゲーム初期化
 //===================================
 initGame(15, 15);
+
+// モーダルとそのテキストの要素を取得
+const modal = document.getElementById("modal");
+const modalText = document.getElementById("modal-text");
+
+
+function openClearTimeModal(result, countTime) {
+    const minutes = Math.trunc(countTime / 60);
+    const second = (timerCount % 60);
+    // 結果表示
+    modalText.innerHTML =
+        `${result}
+        YOUR SCORE:${minutes}m${second}s)`;
+
+    // モーダルを表示する
+    modal.style.display = "block";
+}
+// ×ボタンまたはモーダルの外側をクリックしたらモーダルを非表示にする
+window.onclick = function (event) {
+    if (event.target === modal || event.target === closeBtn) {
+        modal.style.display = "none";
+    }
+};
+
+// ×ボタンを取得する
+const closeBtn = modal.querySelector(".close");
+if (closeBtn) {
+    // ボタンが存在する場合の処理
+    // ×ボタンをクリックしたらモーダルを非表示にする
+    closeBtn.onclick = function () {
+        modal.style.display = "none";
+    };
+} else {
+    console.log("×ボタンが見つかりませんでした");
+}

@@ -297,13 +297,17 @@ const checkComplete = function () {
         gameStage = GAME_FINISHED;
 
         // サーバとの通信
-        let result;
+        let result = 'TOP SCORES:<br>';
         let param = new URLSearchParams();
-        param.append("cleartime", timerCount);
+        const nowDate = new Date();
+        param.append("ClearTime", timerCount);
+        param.append("Date", nowDate.toLocaleString('ja-JP'));
         axios.post("/minesweeper", param)
             .then((res) => {
                 // 成功時の処理
-                result = res.data;
+                res.data.forEach(function (highScores) {
+                    result += highScores.ClearTime + ' at ' + highScores.Date + '<br>';
+                });
                 openClearTimeModal(result, timerCount);
             }).catch((err) => {
                 // エラー時の処理
@@ -328,41 +332,36 @@ const countTimer = function () {
 };
 
 //===================================
-// ゲーム初期化
+// モーダル設定
 //===================================
-initGame(15, 15);
-
-// モーダルとそのテキストの要素を取得
-const modal = document.getElementById("modal");
-const modalText = document.getElementById("modal-text");
-
-
 function openClearTimeModal(result, countTime) {
+    // モーダルとそのテキストの要素を取得
+    const modal = document.getElementById("modal");
+    const modalText = document.getElementById("modal-text");
+
     const minutes = Math.trunc(countTime / 60);
     const second = (timerCount % 60);
     // 結果表示
     modalText.innerHTML =
-        `${result}
-        YOUR SCORE:${minutes}m${second}s)`;
+        `YOUR SCORE:${minutes}m${second}s<br>
+        ${result}`;
 
     // モーダルを表示する
     modal.style.display = "block";
 }
+
 // ×ボタンまたはモーダルの外側をクリックしたらモーダルを非表示にする
 window.onclick = function (event) {
+    const modal = document.getElementById("modal");
+    const closeBtn = modal.querySelector(".close");
     if (event.target === modal || event.target === closeBtn) {
         modal.style.display = "none";
     }
 };
 
-// ×ボタンを取得する
-const closeBtn = modal.querySelector(".close");
-if (closeBtn) {
-    // ボタンが存在する場合の処理
-    // ×ボタンをクリックしたらモーダルを非表示にする
-    closeBtn.onclick = function () {
-        modal.style.display = "none";
-    };
-} else {
-    console.log("×ボタンが見つかりませんでした");
-}
+//===================================
+// ゲーム初期化
+//===================================
+window.onload = function () {
+    initGame(15, 15);
+};

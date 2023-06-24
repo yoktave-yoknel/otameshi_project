@@ -31,7 +31,7 @@ app.post('/minesweeper', (req, res) => {
     const putParams = {
         TableName: 'scores_all',
         Item: {
-            'User': 'DUMMY',  // TODO: クライアント側で入力可能になるまで固定値設定
+            'User': req.body.User,
             'ClearTime': parseInt(req.body.ClearTime, 10),
             'Date': req.body.Date,
             'GameKind': 'minesweeper',

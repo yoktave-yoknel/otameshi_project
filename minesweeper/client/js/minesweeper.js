@@ -296,24 +296,8 @@ const checkComplete = function () {
         clearTimeout(timeoutID);
         gameStage = GAME_FINISHED;
 
-        // サーバとの通信
-        let result = 'TOP SCORES:<br>';
-        let param = new URLSearchParams();
-        const nowDate = new Date();
-        param.append("ClearTime", timerCount);
-        param.append("Date", nowDate.toLocaleString('ja-JP'));
-        axios.post("/minesweeper", param)
-            .then((res) => {
-                // 成功時の処理
-                res.data.forEach(function (highScores) {
-                    result += highScores.ClearTime + ' at ' + highScores.Date + '<br>';
-                });
-                openClearTimeModal(result, timerCount);
-            }).catch((err) => {
-                // エラー時の処理
-            }).finally(() => {
-                // 成功/エラー関係なく、実行される処理
-            });
+        // クリア後モーダルを表示
+        openClearTimeModal();
     }
 };
 
@@ -331,20 +315,61 @@ const countTimer = function () {
     timeoutID = setTimeout(countTimer, 1000);
 };
 
+const sec2String = function (second) {
+    let min = String(Math.trunc(second / 60)).padStart(2, '0');
+    let sec = String(second % 60).padStart(2, '0');
+    return min + 'm' + sec + 's';
+};
+
 //===================================
 // モーダル設定
 //===================================
-function openClearTimeModal(result, countTime) {
+function openClearTimeModal(result) {
     // モーダルとそのテキストの要素を取得
     const modal = document.getElementById("modal");
     const modalText = document.getElementById("modal-text");
+    const userSubmitButton = document.getElementById('user-submit-button');
 
-    const minutes = Math.trunc(countTime / 60);
-    const second = (timerCount % 60);
-    // 結果表示
-    modalText.innerHTML =
-        `YOUR SCORE:${minutes}m${second}s<br>
-        ${result}`;
+    // 表示内容の初期化
+    userSubmitButton.disabled = false;
+    document.userinput.user.value = '';
+    modalText.innerHTML = '';
+
+    // クリアデータ(時間とユーザ名)送信ボタンの動作設定
+    userSubmitButton.addEventListener('click', function() {
+        // 送信ボタン無効化
+        userSubmitButton.disabled = true;
+        
+        // ユーザ名を取得
+        const user = document.userinput.user.value;
+
+        // サーバへ送信しTOP3スコアを取得
+        let result = 'TOP SCORES:<br>';
+        let param = new URLSearchParams();
+        const nowDate = new Date();
+        param.append('ClearTime', timerCount);
+        param.append('Date', nowDate.toLocaleString('ja-JP'));
+        param.append('User', user);
+        axios.post('/minesweeper', param)
+            .then((res) => {
+                // 成功時の処理
+                // サーバから受け取ったTOP3のデータを表示文字列へ整形
+                res.data.forEach(function (highScores) {
+                    result += sec2String(highScores.ClearTime) + ' by ' + highScores.User + ' at ' + highScores.Date + '<br>';
+                });
+
+                // クリアタイムとTOP3を表示
+                const clearTime = sec2String(timerCount);
+                modalText.innerHTML =
+                    `YOUR SCORE:${clearTime}<br>
+                    ${result}`;
+            }).catch((err) => {
+                // エラー時の処理
+                openClearTimeModal('SOME ERROR OCCURRED!!');
+            }).finally(() => {
+                // 成功/エラー関係なく、実行される処理
+            });
+    },);
 
     // モーダルを表示する
     modal.style.display = "block";
